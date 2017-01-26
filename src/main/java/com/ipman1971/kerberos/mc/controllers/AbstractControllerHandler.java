@@ -53,14 +53,4 @@ public abstract class AbstractControllerHandler implements ApplicationEventPubli
         this.eventPublisher = applicationEventPublisher;
     }
 
-/*
-    //todo: replace with exception mapping
-    public static <T> T checkResourceFound(final T resource) throws ResourceNotFoundException {
-        if (resource == null) {
-            throw new ResourceNotFoundException("resource not found");
-        }
-        return resource;
-    }
-*/
-
 }

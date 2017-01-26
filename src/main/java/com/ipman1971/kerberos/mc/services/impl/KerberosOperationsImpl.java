@@ -30,4 +30,5 @@ public class KerberosOperationsImpl implements KerberosOperations {
     public boolean checkPrincipal(Principal principal) throws KerberosInternalOperationException {
         return false;
     }
+
 }

@@ -112,5 +112,40 @@
 		</plugins>
 	</build>
 
+	<profiles>
+		<profile>
+			<id>DOCKER_BUILD</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<properties>
+				<docker.buildArg.artifact>${project.artifactId}:${project.version}.jar</docker.buildArg.artifact>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>io.fabric8</groupId>
+						<artifactId>docker-maven-plugin</artifactId>
+						<version>0.19.0</version>
+						<configuration>
+							<verbose>true</verbose>
+							<images>
+								<image>
+									<name>ipman1971/kerberos-mc:${project.version}</name>
+									<build>
+										<dockerFile>Dockerfile</dockerFile>
+										<assembly>
+											<descriptorRef>artifact</descriptorRef>
+										</assembly>
+									</build>
+								</image>
+							</images>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
 
 </project>

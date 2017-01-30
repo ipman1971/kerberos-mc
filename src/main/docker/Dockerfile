@@ -2,7 +2,8 @@ FROM java:8-jdk
 MAINTAINER Ipman1971
 
 ARG user=microservice
-ARG artifact
+#ARG artifact=${project.build.finalName}.jar
+ARG artifact=kerberos-mc-0.0.1-SNAPSHOT.jar
 
 VOLUME /tmp
 EXPOSE 8080

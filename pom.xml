@@ -24,6 +24,7 @@
 		<guava.version>21.0</guava.version>
 		<swagger.springfox.version>2.4.0</swagger.springfox.version>
 		<java.version>1.8</java.version>
+        <docker.datio.registry>por definir</docker.datio.registry>
 	</properties>
 
 	<dependencies>
@@ -70,12 +71,6 @@
 			<version>${swagger.springfox.version}</version>
 		</dependency>
 
-		<!-- <dependency>
-            <groupId>com.mangofactory</groupId>
-            <artifactId>swagger-springmvc</artifactId>
-			<version></version>
-		</dependency> -->
-
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
@@ -104,6 +99,15 @@
 	</dependencies>
 
 	<build>
+        <!-- <resources>
+            <resource>
+                <directory>${project.basedir}</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/Dockerfile</include>
+                </includes>
+            </resource>
+        </resources> -->
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
@@ -113,39 +117,56 @@
 	</build>
 
 	<profiles>
-		<profile>
-			<id>DOCKER_BUILD</id>
-			<activation>
-				<activeByDefault>false</activeByDefault>
-			</activation>
-			<properties>
-				<docker.buildArg.artifact>${project.artifactId}:${project.version}.jar</docker.buildArg.artifact>
-			</properties>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>io.fabric8</groupId>
-						<artifactId>docker-maven-plugin</artifactId>
-						<version>0.19.0</version>
-						<configuration>
-							<verbose>true</verbose>
-							<images>
-								<image>
-									<name>ipman1971/kerberos-mc:${project.version}</name>
-									<build>
-										<dockerFile>Dockerfile</dockerFile>
-										<assembly>
-											<descriptorRef>artifact</descriptorRef>
-										</assembly>
-									</build>
-								</image>
-							</images>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
+        <profile>
+            <!-- command: mvn clean package docker:build -P BUILD_DOCKER-->
+            <id>BUILD_DOCKER</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.spotify</groupId>
+                        <artifactId>docker-maven-plugin</artifactId>
+                        <version>0.4.13</version>
+                        <executions>
+                            <execution>
+                                <id>build-image</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>build</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>push-image</id>
+                                <phase>deploy</phase>
+                                <goals>
+                                    <goal>push</goal>
+                                </goals>
+                                <configuration>
+                                    <imageName>${docker.datio.registry}/ipman1971/${project.artifactId}:${project.version}</imageName>
+                                </configuration>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <imageName>ipman1971/${project.artifactId}</imageName>
+                            <dockerDirectory>${project.basedir}/src/main/docker</dockerDirectory>
+                            <resources>
+                                <resource>
+                                    <targetPath>/</targetPath>
+                                    <directory>${project.build.directory}</directory>
+                                    <include>${project.build.finalName}.jar</include>
+                                </resource>
+                            </resources>
 
+                            <imageTags>
+                                <imageTag>${project.version}</imageTag>
+                            </imageTags>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>
